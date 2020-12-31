@@ -33,6 +33,9 @@
 
 import * as vscode from 'vscode';
 
+import { MessageLevel } from './logic/general/result_message';
+import { Notifications } from './logic/general/notifications';
+
 import { APACHE2 } from './data/licenses/apache2';
 import { BOOSTREF } from './data/licenses/boost_ref1';
 import { BOOST1 } from './data/licenses/boost1';
@@ -55,6 +58,9 @@ export class Configuration {
   public includeFileUpdateAuthor: boolean;
   public formaTimeAsFourHours: boolean;
   public onlyNewFiles: boolean;
+  public notifications: Notifications; 
+  public notificationsLevel: MessageLevel; 
+
 
   constructor() {
     const config = vscode.workspace.getConfiguration('master_header');
@@ -79,6 +85,10 @@ export class Configuration {
     this.includeFileUpdateAuthor = config.get('includeFileUpdateAuthor') || false;
     this.formaTimeAsFourHours = config.get('formaTimeAsFourHours') || false;
     this.onlyNewFiles = config.get('onlyNewFiles') || false;
+
+    this.notifications = this._getNotificationsSettings(config);
+    this.notificationsLevel = this._getNotificationsLevelSettings(config);
+
 
   }
 
@@ -116,6 +126,49 @@ export class Configuration {
         return '';
     }
   }
+
+  private _getNotificationsSettings(config: vscode.WorkspaceConfiguration): Notifications {
+
+    const selectedItem = config.get('notifications');
+
+    switch(selectedItem) {
+      case 'never':
+        return Notifications.never;
+      case 'header commands':
+        return Notifications.headerCommands;
+      case 'add header command only':
+        return Notifications.addHeaderCommandOnly;
+      case 'update header command only':
+        return Notifications.updateHeaderCommandOnly;
+      case 'auto add or upodate header':
+        return Notifications.autoAddOrUpodateHeader;
+      case 'auto add header only':
+        return Notifications.autoAddHeaderOnly;
+      case 'auto update header only':
+        return Notifications.autoUpdateHeaderOnly;
+      case 'always':
+        return Notifications.always;
+      default:
+        return Notifications.headerCommands;
+    }
+  }
+
+  private _getNotificationsLevelSettings(config: vscode.WorkspaceConfiguration): MessageLevel {
+
+    const selectedItem = config.get('notificationsLevel');
+
+    switch(selectedItem) {
+      case 'off':
+        return MessageLevel.off;
+      case 'normal':
+        return MessageLevel.normal;
+      case 'verbose':
+        return MessageLevel.verbose;
+      default:
+        return MessageLevel.normal;
+    }
+  }
+  
 
 
 }

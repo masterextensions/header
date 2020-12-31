@@ -17,7 +17,8 @@
 
 import * as vscode from 'vscode';
 import { NewHeaderDate } from './logic/new_header_data';
-import { supportedLanguages } from './logic/supported_languages';
+import { supportedLanguages } from './logic/general/supported_languages';
+import { MessageType, ResultMessage, Result } from './logic/general/result_message';
 
 
 /**
@@ -36,11 +37,16 @@ export class Handler {
         ? new Handler() : Handler._instance;
 
 
-    public runHeaderCommand(editor: vscode.TextEditor | undefined) {
+    public runHeaderCommand(editor: vscode.TextEditor | undefined) : Result<undefined> {
 
         if (editor === undefined) {
-            return;
-        }
+            return { 
+                resultMessage: {
+                    messageText: 'Master > Header Extension Error: VS-Code editor is undefined.',
+                    type: MessageType.error
+              }
+            };
+        } 
 
         const isSupportedLanguage = this.isSupportedLanguage(editor.document.languageId);
         const hasHaeder = this.hasHaeder(editor.document);
@@ -50,6 +56,13 @@ export class Handler {
         if (!hasHaeder && isSupportedLanguage) {
             this.insertHeader(editor);
         }
+
+        return { 
+            resultMessage: {
+                messageText: 'Master > Header: Header Added.',
+                type: MessageType.information
+          }
+        };
     }
 
     public insertHeader(editor: vscode.TextEditor | undefined) {

@@ -53,17 +53,17 @@
 		"configuration": {
 			"title": "Master > Header",
 			"properties": {
-				"master_header.author": {
+				"masterheader.author": {
 					"type": "string",
 					"default": "",
 					"description": "The author of file."
 				},
-				"master_header.description": {
+				"masterheader.description": {
 					"type": "string",
 					"default": "",
 					"description": "Additional descriptions that can be optionally put into the header."
 				},
-				"master_header.license": {
+				"masterheader.license": {
 					"type": "string",
 					"description": "Select an open source licenses that comply with the Open Source Definition or a custom license to include with your header.",
 					"enum": [
@@ -97,7 +97,7 @@
 						"Custom License"
 					]
 				},
-				"master_header.startLineBehavior": {
+				"masterheader.startLineBehavior": {
 					"type": "string",
 					"description": "Select ",
 					"enum": [
@@ -111,7 +111,7 @@
 						"Custom CHA???"
 					]
 				},
-				"master_header.templateLines": {
+				"masterheader.templateLines": {
 					"type": "array",
 					"default": [
 						"Copyright (c) @year @author",
@@ -125,21 +125,61 @@
 					],
 					"description": "Template lines of header, ."
 				},
-				"master_header.includeFileUpdateAuthor": {
+				"masterheader.includeFileUpdateAuthor": {
 					"type": "boolean",
 					"default": true,
 					"description": "Add last author when file is updated after time-stamp."
 				},
-				"master_header.formaTimeAsFourHours": {
+				"masterheader.formaTimeAsFourHours": {
 					"type": "boolean",
 					"default": false,
 					"description": "Format times as 24-hour clock."
 				},
-				"master_header.onlyNewFiles": {
+				"masterheader.onlyNewFiles": {
 					"type": "boolean",
 					"default": false,
 					"description": "Add only when a new file is created or an empty file is opened."
+				},
+				"masterheader.notifications": {
+					"type": "string",
+					"default": "header commands",
+					"description": "Controls whether to show notifications, such as when a header is added to a file or its header is updated.",
+					"enum": [
+						"never",
+						"header commands",
+						"add header command only",
+						"update header command only",
+						"auto add or upodate header",
+						"auto add header only",
+						"auto update header only",
+						"always"
+					],
+					"enumDescriptions": [
+						"Do not show any notifications.",
+						"Show notifications whenever add or update commands are used.",
+						"Show notifications only if you use the add command.",
+						"Show notifications only if you use the update command.",
+						"Show notifications whenever headers are automatically added or updated.",
+						"Show notifications only if a header is added automatically.",
+						"Show notifications only if a header is updated automatically.",
+						"Always show notifications."
+					]
+				},
+				"masterheader.notificationsLevel": {
+					"type": "string",
+					"default": "normal",
+					"enum": [
+						"normal",
+						"verbose"
+					],
+					"enumDescriptions": [
+						"Do not show any notifications.",
+						"Show normal notifications",
+						"Show verbose notifications"
+					],
+					"markdownDescription": "Controls whether to show normal or verbose notifications. Only applies when `#masterheader.notifications#` is NOT set to `never`."
 				}
+
 			}
 		}
 	},
