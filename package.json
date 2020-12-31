@@ -4,7 +4,7 @@
 	"description": "Managing your files header including copyright noties and license agreemnet in your files. It can automatically add header to files.",
 	"version": "0.0.1",
 	"license": "See License in LICENSE file",
-	"icon": "icon.png",
+
 	"galleryBanner": {
 		"color": "#3C3B6E",
 		"theme": "dark"

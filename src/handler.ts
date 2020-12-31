@@ -16,8 +16,8 @@
  */
 
 import * as vscode from 'vscode';
-import { NewHeaderDate } from './header_data/new_header_data';
-import { supportedLanguages } from './entities/supported_languages';
+import { NewHeaderDate } from './logic/new_header_data';
+import { supportedLanguages } from './logic/supported_languages';
 
 
 /**
