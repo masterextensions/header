@@ -158,8 +158,6 @@ export class Configuration {
     const selectedItem = config.get('notificationsLevel');
 
     switch(selectedItem) {
-      case 'off':
-        return MessageLevel.off;
       case 'normal':
         return MessageLevel.normal;
       case 'verbose':

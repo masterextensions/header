@@ -4,6 +4,10 @@ import { format } from 'path';
 import * as vscode from 'vscode';
 import { Handler } from './handler';
 import { showMessage } from './vscode_helpers/result_message_helper';
+import { Configuration } from './configuration';
+import { Notifications } from './logic/general/notifications';
+
+let configuration = new Configuration();
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -21,21 +25,39 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 		const resultMessage = Handler.instance.runHeaderCommand(vscode.window.activeTextEditor).resultMessage;
-		
+
 		// Display a message box to the user
 		showMessage(resultMessage);
 
 
 	});
 
-	  // Create listener for automatically handling copyright checks
-	  vscode.window.onDidChangeActiveTextEditor(
-		(editor: vscode.TextEditor | undefined) => {
-		  Handler.instance.runHeaderCommand(editor);
-		}
-	  );
+
+
+
+	// Create listener for automatically handling copyright checks
+	vscode.window.onDidChangeActiveTextEditor((e) => applyheader(e));
 
 	context.subscriptions.push(disposable);
+
+
+	// Update status bar item based on events for configuration
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+		configuration = new Configuration();
+	}));
+
+}
+
+
+function applyheader(editor: vscode.TextEditor | undefined) {
+	if (
+		configuration.notifications == Notifications.autoAddOrUpodateHeader || 
+		configuration.notifications == Notifications.autoAddHeaderOnly || 
+		configuration.notifications == Notifications.autoUpdateHeaderOnly
+		) {
+		
+	}
+	Handler.instance.runHeaderCommand(editor);
 }
 
 // this method is called when your extension is deactivated

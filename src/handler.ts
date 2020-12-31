@@ -18,7 +18,7 @@
 import * as vscode from 'vscode';
 import { NewHeaderDate } from './logic/new_header_data';
 import { supportedLanguages } from './logic/general/supported_languages';
-import { MessageType, ResultMessage, Result } from './logic/general/result_message';
+import { MessageType, Result } from './logic/general/result_message';
 
 
 /**
