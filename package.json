@@ -1,0 +1,168 @@
+{
+	"name": "masterheader",
+	"displayName": "Master > Header",
+	"description": "Managing your files header including copyright noties and license agreemnet in your files. It can automatically add header to files.",
+	"version": "0.0.1",
+	"license": "See License in LICENSE file",
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#3C3B6E",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"header",
+		"source",
+		"intellectual property",
+		"copyright",
+		"license",
+		"dart",
+		"typescript",
+		"java",
+		"javascript",
+		"c",
+		"cpp",
+		"csharp",
+		"go",
+		"rust"
+	],
+	"activationEvents": [
+		"onCommand:masterheader.addHeader",
+		"onLanguage:dart",
+		"onLanguage:typescript",
+		"onLanguage:javascript",
+		"onLanguage:java",
+		"onLanguage:c",
+		"onLanguage:cpp",
+		"onLanguage:csharp",
+		"onLanguage:go",
+		"onLanguage:rust"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "masterheader.addHeader",
+				"title": "Add Header"
+			}
+		],
+		"configuration": {
+			"title": "Master > Header",
+			"properties": {
+				"master_header.author": {
+					"type": "string",
+					"default": "",
+					"description": "The author of file."
+				},
+				"master_header.description": {
+					"type": "string",
+					"default": "",
+					"description": "Additional descriptions that can be optionally put into the header."
+				},
+				"master_header.license": {
+					"type": "string",
+					"description": "Select an open source licenses that comply with the Open Source Definition or a custom license to include with your header.",
+					"enum": [
+						"none",
+						"Apache 2",
+						"BSD 3-Clause",
+						"BSD 2-Clause",
+						"GPL 3",
+						"LGPL 3",
+						"MIT",
+						"Mozilla 2",
+						"CDDL",
+						"Eclipse 2",
+						"Boost 1",
+						"Boost 1 (REF)",
+						"Custom"
+					],
+					"enumDescriptions": [
+						"[No License]",
+						"Apache License 2.0",
+						"BSD 3-Clause \"New\" or \"Revised\" license",
+						"BSD 2-Clause \"Simplified\" or \"FreeBSD\" license",
+						"GNU General Public License (GPL) V3",
+						"GNU Library or \"Lesser\" General Public License (LGPL) V3",
+						"MIT license",
+						"Mozilla Public License 2.0",
+						"Common Development and Distribution License",
+						"Eclipse Public License version 2.0",
+						"Boost Software License - Version 1.0",
+						"Boost Software License - Version 1.0 (Refrenced Version)",
+						"Custom License"
+					]
+				},
+				"master_header.startLineBehavior": {
+					"type": "string",
+					"description": "Select ",
+					"enum": [
+						"empty",
+						"Start with default block comment char for exapmle astrics  Line Start Character",
+						"Start Custom Char"
+					],
+					"enumDescriptions": [
+						"[No ??]",
+						"??",
+						"Custom CHA???"
+					]
+				},
+				"master_header.templateLines": {
+					"type": "array",
+					"default": [
+						"Copyright (c) @year @author",
+						"All rights reserved.",
+						"",
+						"@description",
+						"",
+						"@license",
+						"",
+						"Created: @created:shortdate @created:time by @created:author"
+					],
+					"description": "Template lines of header, ."
+				},
+				"master_header.includeFileUpdateAuthor": {
+					"type": "boolean",
+					"default": true,
+					"description": "Add last author when file is updated after time-stamp."
+				},
+				"master_header.formaTimeAsFourHours": {
+					"type": "boolean",
+					"default": false,
+					"description": "Format times as 24-hour clock."
+				},
+				"master_header.onlyNewFiles": {
+					"type": "boolean",
+					"default": false,
+					"description": "Add only when a new file is created or an empty file is opened."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.52.0",
+		"@typescript-eslint/eslint-plugin": "^4.9.0",
+		"@typescript-eslint/parser": "^4.9.0",
+		"eslint": "^7.15.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.1.2",
+		"vscode-test": "^1.4.1"
+	}
+}
