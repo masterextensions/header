@@ -24,7 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 
 
-		const resultMessage = Handler.instance.runHeaderCommand(vscode.window.activeTextEditor).resultMessage;
+		const resulte = Handler.instance.runHeaderCommand(vscode.window.activeTextEditor);
+		const resultMessage = resulte.resultMessage;
 
 		// Display a message box to the user
 		showMessage(resultMessage);
