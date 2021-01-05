@@ -22,30 +22,52 @@ import { VaribleKeys } from './varible_keys';
 
 export class NewHeaderDate extends HeaderData {
 
-  public createdShortdate: string = ''; 
-  public createdTime: string = '';
-  public createdAuthor: string = '';
- 
-    constructor() {
-      super();
-      
-      //let configuration = new Configuration();
-      
-      this.isUpdated = false;
-      this.year = new Date().getFullYear().toString();
+  public updatedDatetime: string = '';
+  public updatedDate: string = '';
+  public updatedFullDate: string = '';
+  public updatedFullDatetime: string = '';
+  public updatedTime: string = '';
+  public updatedFulltime: string = '';
+  public updatedAuthor: string = '';
 
-      this.createdShortdate = '<createdShortdate>';
-      this.createdTime = '<createdTime>';
-      this.createdAuthor = super.author;
+ 
+  constructor(isUpdated: boolean) {
+
+    super(isUpdated);
     
+
+    if (this.isUpdated) {
+      // read from
+      // this.createdDatetime = this.today.toLocaleString();
+      // this.createdDate = this.today.toLocaleDateString();
+      // this.createdFullDate = this.today.toDateString();
+      // this.createdFullDatetime = this.today.toString();
+      // this.createdTime = this.today.toLocaleTimeString();
+      // this.createdFulltime = this.today.toTimeString();
+
+
+      this.updatedDatetime = this.today.toLocaleString();
+      this.updatedDate = this.today.toLocaleDateString();
+      this.updatedFullDate = this.today.toDateString();
+      this.updatedFullDatetime = this.today.toString();
+      this.updatedTime = this.today.toLocaleTimeString();
+      this.updatedFulltime = this.today.toTimeString();
     }
+    
+  }
 
     protected setVaribles(input: string): string {
       return super.setVaribles(input) 
-        .replace(VaribleKeys.created, this.createdShortdate)
-        .replace(VaribleKeys.createdShortdate, this.createdShortdate)
-        .replace(VaribleKeys.createdTime, this.description)
-        .replace(VaribleKeys.createdAuthor, this.createdAuthor);
+        .replace(VaribleKeys.updatedDatetime, this.updatedDatetime)
+        .replace(VaribleKeys.updatedDate, this.updatedDate)
+        .replace(VaribleKeys.updatedFullDate, this.updatedFullDate)
+        .replace(VaribleKeys.updatedFullDatetime, this.updatedFullDatetime)
+        .replace(VaribleKeys.updatedTime, this.updatedTime)
+        .replace(VaribleKeys.updatedFulltime, this.updatedFulltime)
+        .replace(VaribleKeys.updatedAuthor, this.updatedAuthor);
     }
+
+
+
 
 }

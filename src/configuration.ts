@@ -51,39 +51,29 @@ import { MOZILLA2 } from './data/licenses/mozilla2';
 
 export class Configuration {
 
-  public templateLines: string[];
+  public template: string[];
   public author: string;
   public description: string;
   public license: string;
   public includeFileUpdateAuthor: boolean;
-  public formaTimeAsFourHours: boolean;
+  public formatTimeAsFourHours: boolean;
   public onlyNewFiles: boolean;
   public notifications: Notifications; 
   public notificationsLevel: MessageLevel; 
 
 
   constructor() {
-    const config = vscode.workspace.getConfiguration('master_header');
+    const config = vscode.workspace.getConfiguration('masterheader');
     // this.template = config.get('template') || '';
 
-    this.templateLines = [
-      'Copyright (c) ${year} ${author}',
-      'All rights reserved.',
-      '',
-      '${description}',
-      '',
-      '${license}',
-      '',
-      'Created: ${created:shortdate ${created:time by ${created:author'
-    ];
-
+    this.template = config.get('template') || [''];
 
     this.author = config.get('author') || '';
     this.description = config.get('description') || '';
     this.license = this._LoadLicense(config);
 
     this.includeFileUpdateAuthor = config.get('includeFileUpdateAuthor') || false;
-    this.formaTimeAsFourHours = config.get('formaTimeAsFourHours') || false;
+    this.formatTimeAsFourHours = config.get('formatTimeAsFourHours') || false;
     this.onlyNewFiles = config.get('onlyNewFiles') || false;
 
     this.notifications = this._getNotificationsSettings(config);

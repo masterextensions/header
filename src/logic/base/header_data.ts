@@ -23,28 +23,64 @@ import { VaribleKeys } from '../varible_keys';
 
 export abstract class HeaderData {
 
-  public templateLines: string[];
+  public template: string[];
+
   public author: string = '';
   public description: string = '';
   public license: string = '';
-  public includeFileUpdateAuthor: boolean = false;
-  public formaTimeAsFourHours: boolean = false;
-  public onlyNewFiles: boolean = false;
-  public isUpdated: boolean = false;
   public year: string = '';
+  
+  public createdDatetime: string;
+  public createdDate: string ;
+  public createdFullDate: string;
+  public createdFullDatetime: string;
+  public createdTime: string;
+  public createdFulltime: string;
+  public createdAuthor: string;
+
+  public includeFileUpdateAuthor: boolean = false;
+  public formatTimeAsFourHours: boolean = false;
+  public onlyNewFiles: boolean = false;
+  public isUpdated: boolean;
+
+  protected today: Date;
+  
+
+  constructor(isUpdated: boolean) {
+
+    this.isUpdated = isUpdated || false;
 
 
+    if (!this.isUpdated) {
+      this.today = new Date();
+      this.year = this.today.getFullYear().toString(); 
+      this.createdDatetime = this.today.toLocaleString();
+      this.createdDate = this.today.toLocaleDateString();
+      this.createdFullDate = this.today.toDateString();
+      this.createdFullDatetime = this.today.toString();
+      this.createdTime = this.today.toLocaleTimeString();
+      this.createdFulltime = this.today.toTimeString();
+    } else {
+      this.year = 'this.today.getFullYear().toString()'; 
+      this.createdDatetime = 'this.today.toLocaleString()';
+      this.createdDate = 'this.today.toLocaleDateString()';
+      this.createdFullDate = 'this.today.toDateString()';
+      this.createdFullDatetime = 'this.today.toString()';
+      this.createdTime = 'this.today.toLocaleTimeString()';
+      this.createdFulltime = 'this.today.toTimeString()';
+    }
 
-  constructor() {
     const configuration = new Configuration();
-    this.templateLines = configuration.templateLines;
+    this.template = configuration.template;
     this.author = configuration.author;
     this.description = configuration.description;
-    this.author = configuration.author;
     this.license = configuration.license;
     this.includeFileUpdateAuthor = configuration.includeFileUpdateAuthor;
-    this.formaTimeAsFourHours = configuration.formaTimeAsFourHours;
+    this.formatTimeAsFourHours = configuration.formatTimeAsFourHours;
     this.onlyNewFiles = configuration.onlyNewFiles;
+
+    this.createdAuthor = this.author;
+
   }
 
 
@@ -52,15 +88,22 @@ export abstract class HeaderData {
     return input
       .replace(VaribleKeys.year, this.year)
       .replace(VaribleKeys.author, this.author)
+      .replace(VaribleKeys.license, this.license)
       .replace(VaribleKeys.description, this.description)
-      .replace(VaribleKeys.license, this.license);
+      .replace(VaribleKeys.createdDatetime, this.createdDatetime)
+      .replace(VaribleKeys.createdDate, this.createdDate)
+      .replace(VaribleKeys.createdFullDate, this.createdFullDate)
+      .replace(VaribleKeys.createdFullDatetime, this.createdFullDatetime)
+      .replace(VaribleKeys.createdTime, this.createdTime)
+      .replace(VaribleKeys.createdFulltime, this.createdFulltime)
+      .replace(VaribleKeys.createdAuthor, this.createdAuthor);
   }
 
   /**
    *     toString method
    */
   public toString() {
-    const body = this.setVaribles(this.templateLines.join('\n *\t'));
+    const body = this.setVaribles(this.template.join('\n *\t'));
     return '/*\n *\t' + body + '\n*/\n';
   }
 

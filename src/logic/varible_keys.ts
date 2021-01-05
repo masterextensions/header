@@ -16,16 +16,28 @@
  */
 
  export const VaribleKeys = {
-    year: '@year',
-    author: '@author',
-    description: '@description',
-    license: '@license',
-    created: '@created',
-    createdShortdate: '@created:shortdate',
-    createdTime: '@created:time',
-    createdAuthor: '@created:author',
-    updated: '@updated',
-    updatedShortdate: '@updated:shortdate',
-    updatedTime: '@updated:time',
-    updatedAuthor: '@updated:author',
+   
+    year: '${year}',
+    author: '${author}',
+    description: '${description}',
+    license: '${license}',
+
+    created: '${created}',
+    createdDatetime: '${created.datetime}',
+    createdDate: '${created.date}',
+    createdFullDate: '${created.fullDate}',
+    createdFullDatetime: '${created.fullDatetime}',
+    createdTime: '${created.time}',
+    createdFulltime: '${created.fulltime}',
+    createdAuthor: '${created_author}',
+    
+    updated: '${updated}',
+    updatedDatetime: '${updated.datetime}',
+    updatedDate: '${updated.date}',
+    updatedFullDate: '${updated.fullDate}',
+    updatedFullDatetime: '${updated.fullDatetime}',
+    updatedTime: '${updated.time}',
+    updatedFulltime: '${updated.fulltime}',
+    updatedAuthor: '${updated_author}',
+
   };

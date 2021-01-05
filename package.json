@@ -111,26 +111,26 @@
 						"Custom CHA???"
 					]
 				},
-				"masterheader.templateLines": {
+				"masterheader.template": {
 					"type": "array",
 					"default": [
-						"Copyright (c) @year @author",
+						"Copyright (c) ${year} ${author}",
 						"All rights reserved.",
 						"",
-						"@description",
+						"${description}",
 						"",
-						"@license",
+						"${license}",
 						"",
-						"Created: @created:shortdate @created:time by @created:author"
+						"Created: ${created_shortdate} ${created_time} by ${created_author}"
 					],
-					"description": "Template lines of header, ."
+					"desription": "Template lines of header."
 				},
 				"masterheader.includeFileUpdateAuthor": {
 					"type": "boolean",
 					"default": true,
 					"description": "Add last author when file is updated after time-stamp."
 				},
-				"masterheader.formaTimeAsFourHours": {
+				"masterheader.formatTimeAsFourHours": {
 					"type": "boolean",
 					"default": false,
 					"description": "Format times as 24-hour clock."

@@ -21,8 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	const disposable = vscode.commands.registerCommand('masterheader.addHeader', () => {
-		// The code you place here will be executed every time your command is executed
 
+		// The code you place here will be executed every time your command is executed
 
 		const resulte = Handler.instance.runHeaderCommand(vscode.window.activeTextEditor);
 		const resultMessage = resulte.resultMessage;
@@ -51,14 +51,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 function applyheader(editor: vscode.TextEditor | undefined) {
-	if (
-		configuration.notifications == Notifications.autoAddOrUpodateHeader || 
+	
+	if (configuration.notifications == Notifications.autoAddOrUpodateHeader || 
 		configuration.notifications == Notifications.autoAddHeaderOnly || 
-		configuration.notifications == Notifications.autoUpdateHeaderOnly
-		) {
-		
+		configuration.notifications == Notifications.autoUpdateHeaderOnly) {
+
+			const resulte = Handler.instance.runHeaderCommand(editor);
+			// Display a message box to the user
+			showMessage(resulte.resultMessage);
+	} else {
+			Handler.instance.runHeaderCommand(editor);
 	}
-	Handler.instance.runHeaderCommand(editor);
+
 }
 
 // this method is called when your extension is deactivated
