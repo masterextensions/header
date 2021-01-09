@@ -29,7 +29,7 @@
     createdFullDatetime: '${created.fullDatetime}',
     createdTime: '${created.time}',
     createdFulltime: '${created.fulltime}',
-    createdAuthor: '${created_author}',
+    createdAuthor: '${created.author}',
     
     updated: '${updated}',
     updatedDatetime: '${updated.datetime}',
@@ -38,6 +38,6 @@
     updatedFullDatetime: '${updated.fullDatetime}',
     updatedTime: '${updated.time}',
     updatedFulltime: '${updated.fulltime}',
-    updatedAuthor: '${updated_author}',
+    updatedAuthor: '${updated.author}',
 
   };

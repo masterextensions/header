@@ -3,11 +3,8 @@
 import { format } from 'path';
 import * as vscode from 'vscode';
 import { Handler } from './handler';
-import { showMessage } from './vscode_helpers/result_message_helper';
-import { Configuration } from './configuration';
-import { Notifications } from './logic/general/notifications';
 
-let configuration = new Configuration();
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,15 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 
 		const resulte = Handler.instance.runHeaderCommand(vscode.window.activeTextEditor);
-		const resultMessage = resulte.resultMessage;
-
-		// Display a message box to the user
-		showMessage(resultMessage);
-
 
 	});
-
-
 
 
 	// Create listener for automatically handling copyright checks
@@ -44,25 +34,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Update status bar item based on events for configuration
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-		configuration = new Configuration();
+		
+		if (e.affectsConfiguration('masterheader')) {
+			// TODO comment all consoles --> AND check specified configrution changes
+			console.log('request new Configuration();');
+			Handler.instance.reloadConfiguration();
+			console.warn('DONE: new Configuration();');
+		}
+		
 	}));
 
 }
 
 
 function applyheader(editor: vscode.TextEditor | undefined) {
-	
-	if (configuration.notifications == Notifications.autoAddOrUpodateHeader || 
-		configuration.notifications == Notifications.autoAddHeaderOnly || 
-		configuration.notifications == Notifications.autoUpdateHeaderOnly) {
-
-			const resulte = Handler.instance.runHeaderCommand(editor);
-			// Display a message box to the user
-			showMessage(resulte.resultMessage);
-	} else {
-			Handler.instance.runHeaderCommand(editor);
-	}
-
+	Handler.instance.runHeaderCommand(editor);
 }
 
 // this method is called when your extension is deactivated

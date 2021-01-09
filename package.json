@@ -121,7 +121,7 @@
 						"",
 						"${license}",
 						"",
-						"Created: ${created_shortdate} ${created_time} by ${created_author}"
+						"Created: ${created.datetime} by ${created.author}"
 					],
 					"desription": "Template lines of header."
 				},

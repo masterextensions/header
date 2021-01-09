@@ -50,7 +50,6 @@ export abstract class HeaderData {
 
     this.isUpdated = isUpdated || false;
 
-
     if (!this.isUpdated) {
       this.today = new Date();
       this.year = this.today.getFullYear().toString(); 
@@ -61,6 +60,7 @@ export abstract class HeaderData {
       this.createdTime = this.today.toLocaleTimeString();
       this.createdFulltime = this.today.toTimeString();
     } else {
+      this.today = new Date();
       this.year = 'this.today.getFullYear().toString()'; 
       this.createdDatetime = 'this.today.toLocaleString()';
       this.createdDate = 'this.today.toLocaleDateString()';
@@ -83,6 +83,8 @@ export abstract class HeaderData {
 
   }
 
+// TODO: get vscode user or git user for default author...
+//  in package.json add it like this as default value -> ${vscode.username} or etc
 
   protected setVaribles(input: string): string {
     return input

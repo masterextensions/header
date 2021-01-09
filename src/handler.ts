@@ -16,9 +16,13 @@
  */
 
 import * as vscode from 'vscode';
+import { Configuration } from './configuration';
 import { NewHeaderDate } from './logic/new_header_data';
 import { supportedLanguages } from './logic/general/supported_languages';
-import { MessageType, Result } from './logic/general/result_message';
+import { MessageType, ResultMessage, Result } from './logic/general/result_message';
+import { Notifications } from './logic/general/notifications';
+import * as MessageHelper from './vscode_helpers/result_message_helper';
+
 
 
 /**
@@ -27,27 +31,55 @@ import { MessageType, Result } from './logic/general/result_message';
  */
 export class Handler {
 
-
-    private constructor() {
-      // console.log('HeaderHandler is just created'); 
-    }
-
     private static _instance: Handler; 
     public static instance: Handler = !Handler._instance 
         ? new Handler() : Handler._instance;
 
+    private _configuration: Configuration;
 
-    public runHeaderCommand(editor: vscode.TextEditor | undefined) : Result<undefined> {
 
-        if (editor === undefined) {
-            return { 
-                resultMessage: {
-                    messageText: 'Master > Header Extension Error: VS-Code editor is undefined.',
-                    type: MessageType.error
-              }
-            };
-        } 
+    private constructor() {
+      // console.log('HeaderHandler is just created'); 
+      this._configuration = new Configuration();
+    }
 
+
+    private _showMessage(message: ResultMessage) {
+	
+        if (this._configuration.notifications == Notifications.autoAddOrUpodateHeader || 
+            this._configuration.notifications == Notifications.autoAddHeaderOnly || 
+            this._configuration.notifications == Notifications.autoUpdateHeaderOnly) {
+                // Display a message box to the user
+                MessageHelper.showMessage(message);
+
+        }
+    }
+    
+
+    /** @type {vscode.TextEditor | Result<undefined>}
+     * @,,param uriComponent A value representing an encoded URI component.
+     *  */ 
+    private _resolveEditor(editor: vscode.TextEditor | undefined) 
+        : vscode.TextEditor {
+            if (editor === undefined) {
+               this._showMessage({
+                        messageText: 'Master > Header Extension Error: VS-Code editor is undefined.',
+                        type: MessageType.error
+                  }
+                );
+                throw new Error("******* message.messageText"); 
+            } else {
+                return editor;
+            }
+    }
+
+    public reloadConfiguration(): void {
+        this._configuration = new Configuration();
+    }
+
+    public runHeaderCommand(mayEeditor: vscode.TextEditor | undefined) {
+
+        const editor = this._resolveEditor(mayEeditor);
         const isSupportedLanguage = this.isSupportedLanguage(editor.document.languageId);
         const hasHaeder = this.hasHaeder(editor.document);
         // const isEmptyDocument = this.isEmptyDocument(this._editor.document);
@@ -55,20 +87,19 @@ export class Handler {
 
         if (!hasHaeder && isSupportedLanguage) {
             this.insertHeader(editor);
+            this._showMessage({ 
+                messageText: 'Master > Header: Header Added.',
+                 type: MessageType.information
+            });
         }
 
-        return { 
-            resultMessage: {
-                messageText: 'Master > Header: Header Added.',
-                type: MessageType.information
-          }
-        };
     }
 
     public insertHeader(editor: vscode.TextEditor | undefined) {
         if (editor !== undefined) {
             const documentStartPosition = new vscode.Position(0, 0);
-            const header = new NewHeaderDate().toString();
+            // TODO: add update support here
+            const header = new NewHeaderDate(false).toString();
 
             editor.edit(document => {
                 document.insert(documentStartPosition, header);
@@ -99,10 +130,8 @@ export class Handler {
         return this.hasHaeder(document) && document.isDirty;
     }
 
-
     public isSupportedLanguage(languageId: string): boolean {
         return supportedLanguages.has(languageId);
     }
-
 
 }
