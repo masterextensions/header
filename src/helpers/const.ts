@@ -1,13 +1,13 @@
 /*
  *   Copyright (c) 2020 Baio Authors
  *   All rights reserved.
-
+ *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
-
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
-
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,18 @@
  */
 
 
- export const supportedLanguages = new Set([
-    'dart',
-    'go',
-    'swift',
-    'kotlin',
-    'c',
-    'objective-c',
-    'cpp',
-    'csharp',
-    'typescript',
-    'javascript',
-    'java',
-    'rust'
-  ]);
+
+export const carriageReturn = `\r`;
+export const newLine = `\n`;
+
+export const escapedCarriageReturn = `\\r`;
+export const escapedNewLine = `\\n`;
+
+export const literalEscapedCarriageReturn = `\\\\r`;
+export const literalEscapedNewLine = `\\\\n`;
+
+export const globalUniqueKey = `µČ`;
+export const carriageReturnUniqueKey = `µČr`;
+export const newLineUniqueKey = `µČn`;
+
+

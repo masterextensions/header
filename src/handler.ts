@@ -15,102 +15,130 @@
  *   limitations under the License.
  */
 
+ // TODO: Create master_dart_essentials extension
+
+
 import * as vscode from 'vscode';
 import { Configuration } from './configuration';
 import { NewHeaderDate } from './logic/new_header_data';
 import { supportedLanguages } from './logic/general/supported_languages';
 import { MessageType, ResultMessage, Result } from './logic/general/result_message';
 import { Notifications } from './logic/general/notifications';
-import * as MessageHelper from './vscode_helpers/result_message_helper';
-
+import * as MessageHelper from './helpers/result_message_helper';
 
 
 /**
- * Instantiating this Class via the new operator in NOT allowed,
- * So you need to call `HeaderHandler.instance` static prop Instead.
+ * Instantiating this Class via the new operator is NOT availabe,
+ * So you need to call `HeaderHandler.instance` static property Instead.
  */
 export class Handler {
 
-    private static _instance: Handler; 
-    public static instance: Handler = !Handler._instance 
+    private static _instance: Handler;
+    public static instance: Handler = !Handler._instance
         ? new Handler() : Handler._instance;
 
     private _configuration: Configuration;
 
 
     private constructor() {
-      // console.log('HeaderHandler is just created'); 
+      // console.log('HeaderHandler is just created');
       this._configuration = new Configuration();
+    }
+
+    private _getDocumentHeaderState(document: vscode.TextDocument) : DocumentHeaderState {
+
+        if (DocumentHelper.isEmptyDocument(document)) {
+            return DocumentHeaderState.notFoundEmpty;
+        }
+
+        if (DocumentHelper.isDocumentStartWithCommentBlock(document)) {
+            return DocumentHeaderState.semiFound;
+        }
+
+        // const headerLine = document.lineAt(1);
+        // return (
+        //     !headerLine.isEmptyOrWhitespace &&
+        //     headerLine.text.includes('Copyright')
+        // );
+
+        return DocumentHeaderState.notFound;
     }
 
 
     private _showMessage(message: ResultMessage) {
-	
-        if (this._configuration.notifications == Notifications.autoAddOrUpodateHeader || 
-            this._configuration.notifications == Notifications.autoAddHeaderOnly || 
-            this._configuration.notifications == Notifications.autoUpdateHeaderOnly) {
+
+        if (this._configuration.notifications === Notifications.autoAddOrUpodateHeader ||
+            this._configuration.notifications === Notifications.autoAddHeaderOnly ||
+            this._configuration.notifications === Notifications.autoUpdateHeaderOnly) {
                 // Display a message box to the user
                 MessageHelper.showMessage(message);
 
         }
     }
-    
 
-    /** @type {vscode.TextEditor | Result<undefined>}
-     * @,,param uriComponent A value representing an encoded URI component.
-     *  */ 
-    private _resolveEditor(editor: vscode.TextEditor | undefined) 
-        : vscode.TextEditor {
-            if (editor === undefined) {
-               this._showMessage({
-                        messageText: 'Master > Header Extension Error: VS-Code editor is undefined.',
-                        type: MessageType.error
-                  }
-                );
-                throw new Error("******* message.messageText"); 
-            } else {
-                return editor;
-            }
-    }
+
+    // private _resolveEditor(editor: vscode.TextEditor | undefined)
+    //     : vscode.TextEditor {
+    //         if (editor === undefined) {
+    //            this._showMessage({
+    //                     messageText: 'Master > Header Extension Error: VS-Code editor is undefined.',
+    //                     type: MessageType.error
+    //               }
+    //             );
+    //             throw new Error("******* message.messageText");
+    //         } else {
+    //             return editor;
+    //         }
+    // }
+
+
+    // TODO: ghange modifires to private when there is such a possiblity ...
+    //#region  Public Methods
 
     public reloadConfiguration(): void {
         this._configuration = new Configuration();
     }
 
-    public runHeaderCommand(mayEeditor: vscode.TextEditor | undefined) {
+    public runAddHeaderCommand(editor: vscode.TextEditor | undefined) {
+        if (!editor) return;
 
-        const editor = this._resolveEditor(mayEeditor);
+        // const editor = this._resolveEditor(mayEeditor);
         const isSupportedLanguage = this.isSupportedLanguage(editor.document.languageId);
         const hasHaeder = this.hasHaeder(editor.document);
         // const isEmptyDocument = this.isEmptyDocument(this._editor.document);
         // const getOnlyNewFiles = false; //configuration.getOnlyNewFiles();
 
         if (!hasHaeder && isSupportedLanguage) {
-            this.insertHeader(editor);
-            this._showMessage({ 
-                messageText: 'Master > Header: Header Added.',
-                 type: MessageType.information
+            this._insertHeader(editor);
+            this._showMessage({
+                text: 'Master > Header: Header Added.',
+                type: MessageType.information
             });
         }
 
     }
 
-    public insertHeader(editor: vscode.TextEditor | undefined) {
-        if (editor !== undefined) {
-            const documentStartPosition = new vscode.Position(0, 0);
-            // TODO: add update support here
-            const header = new NewHeaderDate(false).toString();
+    public runUpdateHeaderCommand(editor: vscode.TextEditor | undefined) {
+        if (!editor) return;
+        const msg = '\\\\n';
+        // DocumentHeaderState[this._getDocumentHeaderState(editor.document)];
+        MessageHelper.showMessage({text: `value: '${msg}'`, type: MessageType.information});
+    }
 
-            editor.edit(document => {
-                document.insert(documentStartPosition, header);
-            });
+    private _insertHeader(editor: vscode.TextEditor) {
 
-        }
+        const documentStartPosition = new vscode.Position(0, 0);
+        // TODO: add update support here
+        const header = new NewHeaderDate(false).toString();
+
+        editor.edit(document => {
+            document.insert(documentStartPosition, header);
+        });
      }
 
     public hasHaeder(document: vscode.TextDocument): boolean {
 
-        if (this.isEmptyDocument(document)) {
+        if (DocumentHelper.isEmptyDocument(document)) {
             return false;
         }
 
@@ -120,10 +148,6 @@ export class Handler {
             headerLine.text.includes('Copyright')
         );
 
-    } 
-
-    public isEmptyDocument(document: vscode.TextDocument): boolean {
-        return document.lineCount <= 1;
     }
 
     public isUpdatedDocument(document: vscode.TextDocument): boolean {
@@ -134,4 +158,42 @@ export class Handler {
         return supportedLanguages.has(languageId);
     }
 
+    //#endregion
+
 }
+
+// TODO: handlereadonly documents
+
+
+// tslint:disable-next-line: max-classes-per-file
+abstract class DocumentHelper {
+
+    private constructor(){}
+
+    public static isEmptyDocument(document: vscode.TextDocument): boolean {
+        return document.lineCount === 1 &&
+            document.lineAt(new vscode.Position(0, 0)).isEmptyOrWhitespace;
+    }
+
+    public static isDocumentStartWithCommentBlock(document: vscode.TextDocument): boolean {
+        return document.lineCount >= 1 &&
+            document.getText(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 3))) === '/*';
+    }
+
+
+}
+
+
+enum DocumentHeaderState {
+    /** When document is empty and so it hasn't any header block too. */
+    notFoundEmpty,
+    /** When document has not any header in it. */
+    notFound,
+    /** When document has a header comment block and its contents is match to current template. */
+    matchFound,
+    /** When document has a header comment block but its contents is NOT match to current template. */
+    unMatchedFound,
+    /** When document has a some header comment block but its not include any information or key of template or default template. */
+    semiFound
+}
+

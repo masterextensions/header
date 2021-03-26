@@ -17,13 +17,13 @@
 
 
 export enum Notifications {
-  never,
-  headerCommands,
-  addHeaderCommandOnly,
-  updateHeaderCommandOnly,
-  autoAddOrUpodateHeader,
-  autoAddHeaderOnly,
-  autoUpdateHeaderOnly,
-  always
+  never = 'never',
+  headerCommands = 'header commands',
+  addHeaderCommandOnly = 'add header command only',
+  updateHeaderCommandOnly = 'update header command only',
+  autoAddOrUpodateHeader = 'auto add or upodate header',
+  autoAddHeaderOnly = 'auto add header only',
+  autoUpdateHeaderOnly = 'auto update header only',
+  always = 'always'
 }
 

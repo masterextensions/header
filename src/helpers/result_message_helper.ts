@@ -15,18 +15,29 @@
  *   limitations under the License.
  */
 
+import * as vscode from 'vscode';
+import { MessageType, ResultMessage }  from '../logic/general/result_message';
 
- export const supportedLanguages = new Set([
-    'dart',
-    'go',
-    'swift',
-    'kotlin',
-    'c',
-    'objective-c',
-    'cpp',
-    'csharp',
-    'typescript',
-    'javascript',
-    'java',
-    'rust'
-  ]);
+
+
+export function showMessage(message: ResultMessage) {
+
+  if (!message) {
+    // console.error('master-header: message is undefined !');
+    return;
+  }
+
+  switch(message.type) {
+    case MessageType.information:
+      vscode.window.showInformationMessage(message.text);
+      break;
+    case MessageType.warning:
+      vscode.window.showWarningMessage(message.text);
+      break;
+    case MessageType.error:
+      vscode.window.showErrorMessage(message.text);
+      break;
+  }
+
+
+}

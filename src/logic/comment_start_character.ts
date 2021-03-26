@@ -15,29 +15,33 @@
  *   limitations under the License.
  */
 
-import * as vscode from 'vscode';
-import { MessageType, ResultMessage }  from '../logic/general/result_message';
 
-
-
-export function showMessage(message: ResultMessage) {
-
-  if (!message) {
-    //console.error('masterheader: message is undefined !');
-    return;
-  }
-
-  switch(message.type) {
-    case MessageType.information:
-      vscode.window.showInformationMessage(message.messageText);
-      break;
-    case MessageType.warning:
-      vscode.window.showWarningMessage(message.messageText);
-      break;
-    case MessageType.error:
-      vscode.window.showErrorMessage(message.messageText);
-      break;
-  }
-
-
+export enum CommentStartCharacter {
+  none = 'none',
+  asterisk = 'asterisk',
+  doubleAsterisk = 'double asterisk',
+  doubleSlash = 'double slash'
 }
+
+
+
+export function getCommentStartStringValue(value: CommentStartCharacter): string {
+  switch(value ?? CommentStartCharacter.asterisk) {
+    case CommentStartCharacter.none:
+      return '';
+    case CommentStartCharacter.asterisk:
+      return '*';
+    case CommentStartCharacter.doubleAsterisk:
+      return '**';
+    case CommentStartCharacter.doubleSlash:
+      return '//';
+    default:
+      return '*';
+  }
+}
+
+
+
+
+
+

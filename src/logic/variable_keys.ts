@@ -15,9 +15,10 @@
  *   limitations under the License.
  */
 
- export const VaribleKeys = {
-   
+ export const VariableKeys = {
+
     year: '${year}',
+    team: '${team}',
     author: '${author}',
     description: '${description}',
     license: '${license}',
@@ -30,7 +31,7 @@
     createdTime: '${created.time}',
     createdFulltime: '${created.fulltime}',
     createdAuthor: '${created.author}',
-    
+
     updated: '${updated}',
     updatedDatetime: '${updated.datetime}',
     updatedDate: '${updated.date}',

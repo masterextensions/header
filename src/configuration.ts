@@ -35,6 +35,8 @@ import * as vscode from 'vscode';
 
 import { MessageLevel } from './logic/general/result_message';
 import { Notifications } from './logic/general/notifications';
+import { CommentStartCharacter, getCommentStartStringValue } from './logic/comment_start_character';
+
 
 import { APACHE2 } from './data/licenses/apache2';
 import { BOOSTREF } from './data/licenses/boost_ref1';
@@ -52,14 +54,18 @@ import { MOZILLA2 } from './data/licenses/mozilla2';
 export class Configuration {
 
   public template: string[];
+  public team: string;
   public author: string;
   public description: string;
   public license: string;
+  public startOfLineCharacter: CommentStartCharacter;
+  public useSpaceAndTabOnStart: boolean;
+  public startOfLineCharacterString: string;
   public includeFileUpdateAuthor: boolean;
   public formatTimeAsFourHours: boolean;
   public onlyNewFiles: boolean;
-  public notifications: Notifications; 
-  public notificationsLevel: MessageLevel; 
+  public notifications: Notifications;
+  public notificationsLevel: MessageLevel;
 
 
   constructor() {
@@ -69,20 +75,24 @@ export class Configuration {
     this.template = config.get('template') || [''];
 
     this.author = config.get('author') || '';
+    this.team = config.get('team') || '';
     this.description = config.get('description') || '';
-    this.license = this._LoadLicense(config);
+    this.license = this._loadLicense(config);
+    this.useSpaceAndTabOnStart = config.get('useSpaceBeforeAndTabAfterStartOfLineCharacter') || true;
+    this.startOfLineCharacter = config.get('startOfLineCharacter') || CommentStartCharacter.asterisk;
+    this.startOfLineCharacterString =  this.useSpaceAndTabOnStart === true
+      ? ` ${getCommentStartStringValue(this.startOfLineCharacter)}\t`
+      : getCommentStartStringValue(this.startOfLineCharacter);
 
     this.includeFileUpdateAuthor = config.get('includeFileUpdateAuthor') || false;
     this.formatTimeAsFourHours = config.get('formatTimeAsFourHours') || false;
     this.onlyNewFiles = config.get('onlyNewFiles') || false;
 
-    this.notifications = this._getNotificationsSettings(config);
-    this.notificationsLevel = this._getNotificationsLevelSettings(config);
-
-
+    this.notifications = config.get('notifications') || Notifications.headerCommands;
+    this.notificationsLevel = config.get('notificationsLevel') || MessageLevel.basic;
   }
 
-  private _LoadLicense(config: vscode.WorkspaceConfiguration): string {
+  private _loadLicense(config: vscode.WorkspaceConfiguration): string {
 
     const selectedLicense = config.get('license');
 
@@ -117,46 +127,80 @@ export class Configuration {
     }
   }
 
-  private _getNotificationsSettings(config: vscode.WorkspaceConfiguration): Notifications {
-
-    const selectedItem = config.get('notifications');
-
-    switch(selectedItem) {
-      case 'never':
-        return Notifications.never;
-      case 'header commands':
-        return Notifications.headerCommands;
-      case 'add header command only':
-        return Notifications.addHeaderCommandOnly;
-      case 'update header command only':
-        return Notifications.updateHeaderCommandOnly;
-      case 'auto add or upodate header':
-        return Notifications.autoAddOrUpodateHeader;
-      case 'auto add header only':
-        return Notifications.autoAddHeaderOnly;
-      case 'auto update header only':
-        return Notifications.autoUpdateHeaderOnly;
-      case 'always':
-        return Notifications.always;
-      default:
-        return Notifications.headerCommands;
-    }
-  }
-
-  private _getNotificationsLevelSettings(config: vscode.WorkspaceConfiguration): MessageLevel {
-
-    const selectedItem = config.get('notificationsLevel');
-
-    switch(selectedItem) {
-      case 'normal':
-        return MessageLevel.normal;
-      case 'verbose':
-        return MessageLevel.verbose;
-      default:
-        return MessageLevel.normal;
-    }
-  }
-  
-
-
 }
+
+
+/*---------------------------------------------------------
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ *--------------------------------------------------------*/
+/*
+
+  import { ExtensionContext, StatusBarAlignment, window, StatusBarItem, Selection, workspace, TextEditor, commands } from 'vscode';
+  import { basename } from 'path';
+  export function activate(context: ExtensionContext) {
+  // Create a status bar item
+  const status = window.createStatusBarItem(StatusBarAlignment.Left, 1000000);
+  context.subscriptions.push(status);
+  // Update status bar item based on events for multi root folder changes
+  context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(e => updateStatus(status)));
+  // Update status bar item based on events for configuration
+  context.subscriptions.push(workspace.onDidChangeConfiguration(e => updateStatus(status)));
+  // Update status bar item based on events around the active editor
+  context.subscriptions.push(window.onDidChangeActiveTextEditor(e => updateStatus(status)));
+  context.subscriptions.push(window.onDidChangeTextEditorViewColumn(e => updateStatus(status)));
+  context.subscriptions.push(workspace.onDidOpenTextDocument(e => updateStatus(status)));
+  context.subscriptions.push(workspace.onDidCloseTextDocument(e => updateStatus(status)));
+  updateStatus(status);
+  }
+  function updateStatus(status: StatusBarItem): void {
+  const info = getEditorInfo();
+  status.text = info ? info.text || '' : '';
+  status.tooltip = info ? info.tooltip : undefined;
+  status.color = info ? info.color : undefined;
+  if (info) {
+  status.show();
+  } else {
+  status.hide();
+  }
+  }
+  function getEditorInfo(): { text?: string; tooltip?: string; color?: string; } | null {
+  const editor = window.activeTextEditor;
+  // If no workspace is opened or just a single folder, we return without any status label
+  // because our extension only works when more than one folder is opened in a workspace.
+  if (!editor || !workspace.workspaceFolders || workspace.workspaceFolders.length < 2) {
+  return null;
+  }
+  let text: string | undefined;
+  let tooltip: string | undefined;
+  let color: string | undefined;
+  // If we have a file:// resource we resolve the WorkspaceFolder this file is from and update
+  // the status accordingly.
+  const resource = editor.document.uri;
+  if (resource.scheme === 'file') {
+  const folder = workspace.getWorkspaceFolder(resource);
+  if (!folder) {
+  text = `$(alert) <outside workspace> → ${basename(resource.fsPath)}`;
+  } else {
+  text = `$(file-submodule) ${basename(folder.uri.fsPath)} (${folder.index + 1} of ${workspace.workspaceFolders.length}) → $(file-code) ${basename(resource.fsPath)}`;
+  tooltip = resource.fsPath;
+  const multiRootConfigForResource = workspace.getConfiguration('multiRootSample', resource);
+  color = multiRootConfigForResource.get('statusColor');
+  }
+  }
+  return { text, tooltip, color };
+  }
+ */
+
+// Conditional operators#
+// For conditional expressions, you can use the following conditional operators:
+
+// Operator	Symbol	Example
+// Equality	==	"editorLangId == typescript"
+// Inequality	!=	"resourceExtname != .js"
+// Or	||	"isLinux || isWindows"
+// And	&&	"textInputFocus && !editorReadonly"
+// Matches	=~	"resourceScheme =~ /^untitled$|^file$/"
+// Greater than	> >=	"gitOpenRepositoryCount >= 1"
+// Less than	< <=	"workspaceFolderCount < 2"
+
+// stage(...resourceStates: SourceControlResourceState[]): Promise<void>;

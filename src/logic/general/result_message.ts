@@ -18,8 +18,8 @@
 
 
 export enum MessageLevel {
-  normal,
-  verbose
+  basic = 'basic',
+  verbose = 'verbose'
 }
 
 export enum MessageType {
@@ -30,11 +30,11 @@ export enum MessageType {
 
 
  export interface ResultMessage {
-   messageText: string; 
+   text: string;
    type: MessageType;
  }
 
  export interface Result<T> {
-  resultMessage: ResultMessage; 
+  resultMessage: ResultMessage;
   result?: T;
 }

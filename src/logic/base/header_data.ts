@@ -18,18 +18,20 @@
 
 
 import { Configuration } from '../../configuration';
-import { VaribleKeys } from '../varible_keys';
+import { VariableKeys } from '../variable_keys';
+import * as Const from '../../helpers/const';
 
 
 export abstract class HeaderData {
 
   public template: string[];
 
+  public team: string = '';
   public author: string = '';
   public description: string = '';
   public license: string = '';
   public year: string = '';
-  
+
   public createdDatetime: string;
   public createdDate: string ;
   public createdFullDate: string;
@@ -44,7 +46,8 @@ export abstract class HeaderData {
   public isUpdated: boolean;
 
   protected today: Date;
-  
+  protected startOfLine: string;
+
 
   constructor(isUpdated: boolean) {
 
@@ -52,7 +55,7 @@ export abstract class HeaderData {
 
     if (!this.isUpdated) {
       this.today = new Date();
-      this.year = this.today.getFullYear().toString(); 
+      this.year = this.today.getFullYear().toString();
       this.createdDatetime = this.today.toLocaleString();
       this.createdDate = this.today.toLocaleDateString();
       this.createdFullDate = this.today.toDateString();
@@ -61,7 +64,7 @@ export abstract class HeaderData {
       this.createdFulltime = this.today.toTimeString();
     } else {
       this.today = new Date();
-      this.year = 'this.today.getFullYear().toString()'; 
+      this.year = 'this.today.getFullYear().toString()';
       this.createdDatetime = 'this.today.toLocaleString()';
       this.createdDate = 'this.today.toLocaleDateString()';
       this.createdFullDate = 'this.today.toDateString()';
@@ -72,6 +75,7 @@ export abstract class HeaderData {
 
     const configuration = new Configuration();
     this.template = configuration.template;
+    this.team = configuration.team;
     this.author = configuration.author;
     this.description = configuration.description;
     this.license = configuration.license;
@@ -81,34 +85,55 @@ export abstract class HeaderData {
 
     this.createdAuthor = this.author;
 
+    this.startOfLine = `\n${configuration.startOfLineCharacterString}`;
+
   }
 
 // TODO: get vscode user or git user for default author...
 //  in package.json add it like this as default value -> ${vscode.username} or etc
 
-  protected setVaribles(input: string): string {
-    return input
-      .replace(VaribleKeys.year, this.year)
-      .replace(VaribleKeys.author, this.author)
-      .replace(VaribleKeys.license, this.license)
-      .replace(VaribleKeys.description, this.description)
-      .replace(VaribleKeys.createdDatetime, this.createdDatetime)
-      .replace(VaribleKeys.createdDate, this.createdDate)
-      .replace(VaribleKeys.createdFullDate, this.createdFullDate)
-      .replace(VaribleKeys.createdFullDatetime, this.createdFullDatetime)
-      .replace(VaribleKeys.createdTime, this.createdTime)
-      .replace(VaribleKeys.createdFulltime, this.createdFulltime)
-      .replace(VaribleKeys.createdAuthor, this.createdAuthor);
+  protected parseVaribles(): string {
+    return this.template.join('\n')
+      .replace(VariableKeys.year, this.year)
+      .replace(VariableKeys.team, this.team)
+      .replace(VariableKeys.author, this.author)
+      .replace(VariableKeys.license, this.license)
+      .replace(VariableKeys.description, this.description)
+      .replace(VariableKeys.createdDatetime, this.createdDatetime)
+      .replace(VariableKeys.createdDate, this.createdDate)
+      .replace(VariableKeys.createdFullDate, this.createdFullDate)
+      .replace(VariableKeys.createdFullDatetime, this.createdFullDatetime)
+      .replace(VariableKeys.createdTime, this.createdTime)
+      .replace(VariableKeys.createdFulltime, this.createdFulltime)
+      .replace(VariableKeys.createdAuthor, this.createdAuthor);
+  }
+
+  protected parseTemplate(): string {
+    return this.parseVaribles()
+      .replace(Const.literalEscapedCarriageReturn, Const.carriageReturnUniqueKey)
+      .replace(Const.literalEscapedNewLine, Const.newLineUniqueKey)
+      .replace(Const.escapedCarriageReturn, Const.carriageReturn)
+      .replace(Const.escapedNewLine, Const.newLine)
+      .replace(Const.carriageReturnUniqueKey, Const.escapedCarriageReturn)
+      .replace(Const.newLineUniqueKey, Const.escapedNewLine);
+  }
+
+  protected addBlockCommentStart(input: string): string {
+    const regexp = /\n/gi;
+     return input.replace(regexp, this.startOfLine);
   }
 
   /**
-   *     toString method
+   *   toString method
    */
   public toString() {
-    const body = this.setVaribles(this.template.join('\n *\t'));
-    return '/*\n *\t' + body + '\n*/\n';
+    // TODO: support other languages like php, yaml, phyton...
+    return `/*${this.startOfLine}${
+        this.addBlockCommentStart(
+            this.parseTemplate()
+            )
+          }\n */`;
   }
-
 
 }
 

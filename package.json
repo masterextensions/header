@@ -4,6 +4,7 @@
 	"description": "Managing your files header including copyright noties and license agreemnet in your files. It can automatically add header to files.",
 	"version": "0.0.1",
 	"license": "See License in LICENSE file",
+	"main": "./out/extension.js",
 	"galleryBanner": {
 		"color": "#3C3B6E",
 		"theme": "dark"
@@ -21,6 +22,8 @@
 		"copyright",
 		"license",
 		"dart",
+		"swift",
+		"kotlin",
 		"typescript",
 		"java",
 		"javascript",
@@ -33,35 +36,73 @@
 	"activationEvents": [
 		"onCommand:masterheader.addHeader",
 		"onLanguage:dart",
+		"onLanguage:go",
+		"onLanguage:swift",
+		"onLanguage:kotlin",
+		"onLanguage:c",
+		"onLanguage:objective-c",
+		"onLanguage:cpp",
+		"onLanguage:csharp",
 		"onLanguage:typescript",
 		"onLanguage:javascript",
 		"onLanguage:java",
-		"onLanguage:c",
-		"onLanguage:cpp",
-		"onLanguage:csharp",
-		"onLanguage:go",
 		"onLanguage:rust"
 	],
-	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "masterheader.addHeader",
-				"title": "Add Header"
+				"title": "Add Header",
+				"category": "Master"
+			},
+			{
+				"command": "masterheader.updateHeader",
+				"title": "Update Header",
+				"category": "Master"
 			}
 		],
+		"keybindings": [
+			{
+				"command": "masterheader.addHeader",
+			  	"key": "alt+h",
+			  	"mac": "alt+h",
+			  	"when": "editorTextFocus && !editorReadonly && config.masterheader.useAltHKeyBindings && editorLangId == dart"
+			}
+		],
+		"menus": {
+			"editor/title": [
+				{
+				  "command": "masterheader.addHeader",
+				  "group": "1_modification",
+				  "when": "editorFocus && !editorReadonly && config.masterheader.enableEditorTitleContextMenu && editorLangId == dart || editorLangId == go || editorLangId == swift || editorLangId == kotlin || editorLangId == c || editorLangId == objective-c || editorLangId == cpp || editorLangId == csharp || editorLangId == typescript || editorLangId == javascript || editorLangId == java || editorLangId == rust"
+			  	}
+			],
+			"touchBar": [
+				{
+					"command": "masterheader.addHeader",
+					"group": "navigation",
+					"when": "isMac && editorFocus && !editorReadonly && config.masterheader.showAddHeaderButtonOnTouchbar && editorLangId == dart || editorLangId == go || editorLangId == swift || editorLangId == kotlin || editorLangId == c || editorLangId == objective-c || editorLangId == cpp || editorLangId == csharp || editorLangId == typescript || editorLangId == javascript || editorLangId == java || editorLangId == rust"
+				}
+			  ]
+		  },
 		"configuration": {
+			"name": "masterheader",
 			"title": "Master > Header",
 			"properties": {
+				"masterheader.team": {
+					"type": "string",
+					"default": "Our Team",
+					"description": "The team of authors."
+				},
 				"masterheader.author": {
 					"type": "string",
-					"default": "",
+					"default": "The Author",
 					"description": "The author of file."
 				},
 				"masterheader.description": {
 					"type": "string",
 					"default": "",
-					"description": "Additional descriptions that can be optionally put into the header."
+					"markdownDescription": "Additional descriptions that can be optionally put into the header. You can use `\\n` as ..."
 				},
 				"masterheader.license": {
 					"type": "string",
@@ -97,31 +138,39 @@
 						"Custom License"
 					]
 				},
-				"masterheader.startLineBehavior": {
+				"masterheader.startOfLineCharacter": {
 					"type": "string",
-					"description": "Select ",
+					"description": "Select a character to start each line of header inside the block comment.",
+					"default": "astric",
 					"enum": [
-						"empty",
-						"Start with default block comment char for exapmle astrics  Line Start Character",
-						"Start Custom Char"
+						"none",
+						"astric",
+						"double astrics",
+						"double slash"
 					],
 					"enumDescriptions": [
-						"[No ??]",
-						"??",
-						"Custom CHA???"
+						"Nothing  []",
+						"Astric   [*]",
+						"Double Astrics   [**]",
+						"Double Slash   [//]"
 					]
+				},
+				"masterheader.useSpaceBeforeAndTabAfterStartOfLineCharacter": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Puting a space before and a tab after the start of line character. Only applies when `#masterheader.startOfLineCharacter#` is NOT set to `none`."
 				},
 				"masterheader.template": {
 					"type": "array",
 					"default": [
-						"Copyright (c) ${year} ${author}",
+						"Copyright (c) ${year} ${team}",
 						"All rights reserved.",
 						"",
 						"${description}",
 						"",
 						"${license}",
 						"",
-						"Created: ${created.datetime} by ${created.author}"
+						"Created: ${created.datetime} By: ${created.author}"
 					],
 					"desription": "Template lines of header."
 				},
@@ -134,6 +183,21 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Format times as 24-hour clock."
+				},
+				"masterheader.useAltHKeyBindings": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Enabling `Alt + H` key binding. Close the open editor windows to take effect."
+				},
+				"masterheader.enableEditorTitleContextMenu": {
+					"type": "boolean",
+					"default": true,
+					"description": "enable editor title context menu."
+				},
+				"masterheader.showAddHeaderButtonOnTouchbar": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Note that this option is only avalilable on macbook with touchbar."
 				},
 				"masterheader.onlyNewFiles": {
 					"type": "boolean",
@@ -167,14 +231,14 @@
 				},
 				"masterheader.notificationsLevel": {
 					"type": "string",
-					"default": "normal",
+					"default": "basic",
 					"enum": [
-						"normal",
+						"basic",
 						"verbose"
 					],
 					"enumDescriptions": [
 						"Do not show any notifications.",
-						"Show normal notifications",
+						"Show basic notifications",
 						"Show verbose notifications"
 					],
 					"markdownDescription": "Controls whether to show normal or verbose notifications. Only applies when `#masterheader.notifications#` is NOT set to `never`."

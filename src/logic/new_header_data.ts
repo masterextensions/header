@@ -1,4 +1,4 @@
-/* 
+/*
  *   Copyright (c) 2020 Baio Authors
  *   All rights reserved.
 
@@ -17,8 +17,7 @@
 
 
 import { HeaderData } from './base/header_data';
-import { VaribleKeys } from './varible_keys';
-//import { Configuration } from '../configuration';
+import { VariableKeys } from './variable_keys';
 
 export class NewHeaderDate extends HeaderData {
 
@@ -30,11 +29,11 @@ export class NewHeaderDate extends HeaderData {
   public updatedFulltime: string = '';
   public updatedAuthor: string = '';
 
- 
+
   constructor(isUpdated: boolean) {
 
     super(isUpdated);
-    
+
 
     if (this.isUpdated) {
       // read from
@@ -53,21 +52,19 @@ export class NewHeaderDate extends HeaderData {
       this.updatedTime = this.today.toLocaleTimeString();
       this.updatedFulltime = this.today.toTimeString();
     }
-    
+
   }
 
-    protected setVaribles(input: string): string {
-      return super.setVaribles(input) 
-        .replace(VaribleKeys.updatedDatetime, this.updatedDatetime)
-        .replace(VaribleKeys.updatedDate, this.updatedDate)
-        .replace(VaribleKeys.updatedFullDate, this.updatedFullDate)
-        .replace(VaribleKeys.updatedFullDatetime, this.updatedFullDatetime)
-        .replace(VaribleKeys.updatedTime, this.updatedTime)
-        .replace(VaribleKeys.updatedFulltime, this.updatedFulltime)
-        .replace(VaribleKeys.updatedAuthor, this.updatedAuthor);
+    protected parseVaribles(): string {
+      return super.parseVaribles()
+        .replace(VariableKeys.updatedDatetime, this.updatedDatetime)
+        .replace(VariableKeys.updatedDate, this.updatedDate)
+        .replace(VariableKeys.updatedFullDate, this.updatedFullDate)
+        .replace(VariableKeys.updatedFullDatetime, this.updatedFullDatetime)
+        .replace(VariableKeys.updatedTime, this.updatedTime)
+        .replace(VariableKeys.updatedFulltime, this.updatedFulltime)
+        .replace(VariableKeys.updatedAuthor, this.updatedAuthor);
     }
-
-
 
 
 }
